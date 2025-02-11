@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Provider Bookings - Need Masters{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Bookings for Your Services</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Customer</th>
+                <th>Service</th>
+                <th>Date</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for booking in bookings %}
+            <tr>
+                <td>{{ booking.customer.email }}</td>
+                <td>{{ booking.service.name }}</td>
+                <td>{{ booking.created_at|date:"d M Y" }}</td>
+                <td>{{ booking.status }}</td>
+                <td>
+                    {% if booking.status == 'Pending' %}
+                        <a href="{% url 'confirm_booking' booking.id %}" class="btn btn-success btn-sm">Confirm</a>
+                        <a href="{% url 'cancel_booking' booking.id %}" class="btn btn-danger btn-sm">Cancel</a>
+                    {% else %}
+                        {{ booking.status }}
+                    {% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="5">No bookings yet.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

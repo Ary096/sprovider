@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Services{% endblock %}
+
+{% block content %}
+<h2>Available Services</h2>
+
+<form method="GET" class="mb-4">
+    <input type="text" name="q" value="{{ query }}" placeholder="Search services..." class="form-control mb-2">
+    
+    <select name="category" class="form-control mb-2">
+        <option value="">All Categories</option>
+        {% for category in categories %}
+            <option value="{{ category.name }}" {% if category.name == category_filter %}selected{% endif %}>
+                {{ category.name }}
+            </option>
+        {% endfor %}
+    </select>
+
+    <input type="number" name="min_price" placeholder="Min Price" class="form-control mb-2" value="{{ min_price }}">
+    <input type="number" name="max_price" placeholder="Max Price" class="form-control mb-2" value="{{ max_price }}">
+    <input type="number" name="min_rating" placeholder="Min Rating (1-5)" class="form-control mb-2" value="{{ min_rating }}">
+
+    <button type="submit" class="btn btn-primary">Apply Filters</button>
+</form>
+
+{% for service in services %}
+<div class="card mb-3">
+    <div class="card-body">
+        <img src="{{ service.image.url }}" class="img-fluid mb-3" alt="{{ service.name }}">
+        <h4 class="card-title">{{ service.name }}</h4>
+        <p class="card-text">Category: {{ service.category.name }}</p>
+        <p class="card-text">Price: ₹{{ service.price }}</p>
+        <p>Rating: ⭐ {% if service.reviews.all %} 
+            {{ service.reviews.aggregate_avg_rating }} / 5
+           {% else %} No reviews yet {% endif %}
+        </p>    
+        <a href="{% url 'service_reviews' service.id %}" class="btn btn-info">View Reviews</a>
+        </button>
+        <a href="{% url 'service_detail' service.id %}" class="btn btn-primary">View Details</a>
+    </div>
+</div>
+
+<!-- Bootstrap Modal for Service Details -->
+<div class="modal fade" id="serviceModal{{ service.id }}" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{{ service.name }}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <img src="{{ service.image.url }}" class="img-fluid mb-3" alt="{{ service.name }}">
+                <p>{{ service.description }}</p>
+                <p>Price: ₹{{ service.price }}</p>
+                <p>Rating: ⭐ {% if service.reviews.all %} 
+                    {{ service.reviews.aggregate_avg_rating }} / 5
+                   {% else %} No rating yet {% endif %}
+                </p>
+                <a href="{% url 'service_detail' service.id %}" class="btn btn-primary">More Details</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% endblock %}

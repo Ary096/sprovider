@@ -1,0 +1,397 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Update Profile{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row g-5">
+        <div class="col-md-3">
+            <!-- Profile Navigation -->
+            <div class="card shadow-sm">
+                <div class="card-body text-center">
+                    <div class="avatar-upload mb-3">
+                        <div class="avatar-preview">
+                            {% if user.role == 'provider' and user.provider_profile.profile_picture %}
+                                <img src="{{ user.provider_profile.profile_picture.url }}" 
+                                     class="rounded-circle shadow" 
+                                     width="120" 
+                                     height="120"
+                                     alt="Profile">
+                            {% elif user.role == 'customer' and user.customer_profile.profile_picture %}
+                                <img src="{{ user.customer_profile.profile_picture.url }}" 
+                                     class="rounded-circle shadow" 
+                                     width="120" 
+                                     height="120"
+                                     alt="Profile">
+                            {% else %}
+                                <div class="default-avatar rounded-circle d-flex align-items-center justify-content-center bg-primary text-white"
+                                     style="width: 120px; height: 120px;">
+                                    <i class="fas fa-user fa-3x"></i>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <h5 class="mb-1">{{ user.get_full_name|default:user.username }}</h5>
+                    <p class="text-muted small">{{ user.get_role_display }}</p>
+                </div>
+                <div class="list-group list-group-flush">
+                    <a href="#profile" 
+                       class="list-group-item list-group-item-action active"
+                       data-bs-toggle="tab">
+                       <i class="fas fa-user-edit me-2"></i>Profile
+                    </a>
+                    <a href="#password" 
+                       class="list-group-item list-group-item-action"
+                       data-bs-toggle="tab">
+                       <i class="fas fa-lock me-2"></i>Password
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-9">
+            <div class="tab-content">
+                <!-- Profile Tab -->
+                <div class="tab-pane fade show active" id="profile">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-primary text-white">
+                            <h4 class="mb-0"><i class="fas fa-user-cog me-2"></i>Edit Profile</h4>
+                        </div>
+                        <div class="card-body p-4">
+                            {% if messages %}
+                            <div class="container mt-3">
+                                {% for message in messages %}
+                                    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                {% endfor %}
+                            </div>
+                            {% endif %}
+
+                            {% if user.role == 'provider' %}
+                            <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                                {% csrf_token %}
+                                <div class="row g-3">
+                                    <!-- Profile Picture Upload -->
+                                    <div class="col-12">
+                                        <div class="file-upload">
+                                            <div class="file-upload-content">
+                                                <input type="file" 
+                                                       id="profile_picture" 
+                                                       name="profile_picture"
+                                                       class="form-control"
+                                                       accept="image/*"
+                                                       onchange="previewImage(this)">
+                                                <label for="profile_picture" 
+                                                       class="form-label d-block text-center">
+                                                    <div class="upload-prompt border rounded-3 p-4">
+                                                        <i class="fas fa-camera fa-3x text-muted mb-3"></i>
+                                                        <p class="mb-0">Click to upload profile picture</p>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Form Fields -->
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="first_name"
+                                                   name="first_name" 
+                                                   placeholder="First Name"
+                                                   value="{{ user.provider_profile.first_name }}"
+                                                   required>
+                                            <label for="first_name">First Name</label>
+                                            <div class="invalid-feedback">
+                                                Please enter your first name
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="last_name"
+                                                   name="last_name" 
+                                                   placeholder="Last Name"
+                                                   value="{{ user.provider_profile.last_name }}"
+                                                   required>
+                                            <label for="last_name">Last Name</label>
+                                            <div class="invalid-feedback">
+                                                Please enter your last name
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="business_name"
+                                                   name="business_name" 
+                                                   placeholder="business_name"
+                                                   value="{{ user.provider_profile.business_name }}"
+                                                   required>
+                                            <label for="business_name">Business Name</label>
+                                            <div class="invalid-feedback">
+                                                Please enter your Business Name
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="phone_number"
+                                                   name="phone_number" 
+                                                   placeholder="phone_number"
+                                                   value="{{ user.provider_profile.phone_number }}"
+                                                   required>
+                                            <label for="phone_number">Phone number</label>
+                                            <div class="invalid-feedback">
+                                                Please enter your Phone Number
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-floating">
+                                            <textarea 
+                                                class="form-control" 
+                                                id="address"
+                                                name="address" 
+                                                placeholder="Address"
+                                            >{{ user.provider_profile.address }}</textarea>
+                                            <label for="address">Address</label>
+                                            <div class="invalid-feedback">
+                                                Please enter your Address
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Other fields with similar structure -->
+                                    <!-- ... -->
+
+                                </div>
+                                <div class="mt-4">
+                                    <button type="submit" 
+                                            class="btn btn-primary btn-lg w-100">
+                                        <i class="fas fa-save me-2"></i>Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                            {% endif %}
+
+                            <!-- Customer Form (similar structure) -->
+                            {% if user.role == 'customer' %}
+                            <form method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+                                {% csrf_token %}
+                                <div class="row g-3">
+                                    <!-- Profile Picture Upload -->
+                                    <div class="col-12">
+                                        <div class="file-upload">
+                                            <div class="file-upload-content">
+                                                <input type="file" 
+                                                       id="profile_picture" 
+                                                       name="profile_picture"
+                                                       class="form-control"
+                                                       accept="image/*"
+                                                       onchange="previewImage(this)">
+                                                <label for="profile_picture" 
+                                                       class="form-label d-block text-center">
+                                                    <div class="upload-prompt border rounded-3 p-4">
+                                                        <i class="fas fa-camera fa-3x text-muted mb-3"></i>
+                                                        <p class="mb-0">Click to upload profile picture</p>
+                                                    </div>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Form Fields -->
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="first_name"
+                                                   name="first_name" 
+                                                   placeholder="First Name"
+                                                   value="{{ user.customer_profile.first_name }}"
+                                                   required>
+                                            <label for="first_name">First Name</label>
+                                            <div class="invalid-feedback">
+                                                Please enter your first name
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="last_name"
+                                                   name="last_name" 
+                                                   placeholder="Last Name"
+                                                   value="{{ user.customer_profile.last_name }}"
+                                                   required>
+                                            <label for="last_name">Last Name</label>
+                                            <div class="invalid-feedback">
+                                                Please enter your last name
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-floating">
+                                            <input type="text" 
+                                                   class="form-control" 
+                                                   id="phone_number"
+                                                   name="phone_number" 
+                                                   placeholder="phone_number"
+                                                   value="{{ user.customer_profile.phone_number }}"
+                                                   required>
+                                            <label for="phone_number">Phone number</label>
+                                            <div class="invalid-feedback">
+                                                Please enter your Phone Number
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="form-floating">
+                                            <textarea 
+                                                class="form-control" 
+                                                id="address"
+                                                name="address" 
+                                                placeholder="Address"
+                                            >{{ user.customer_profile.address }}</textarea>
+                                            <label for="address">Address</label>
+                                            <div class="invalid-feedback">
+                                                Please enter your Address
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- Other fields with similar structure -->
+                                    <!-- ... -->
+
+                                </div>
+                                <div class="mt-4">
+                                    <button type="submit" 
+                                            class="btn btn-primary btn-lg w-100">
+                                        <i class="fas fa-save me-2"></i>Save Changes
+                                    </button>
+                                </div>
+                            </form>
+                            {% endif %}
+                            <!-- ... -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Password Change Tab -->
+                <div class="tab-pane fade" id="password">
+                    <div class="card shadow-sm">
+                        <div class="card-header bg-success text-white">
+                            <h4 class="mb-0"><i class="fas fa-lock me-2"></i>Change Password</h4>
+                        </div>
+                        <div class="card-body p-4">
+                            <form method="POST" action="#" class="needs-validation" novalidate>
+                                {% csrf_token %}
+                                <!-- Password fields -->
+                                <div class="form-floating mb-3">
+                                    <input type="password" 
+                                           class="form-control" 
+                                           id="old_password"
+                                           name="old_password" 
+                                           placeholder="Current Password" required>
+                                    <label for="old_password">Current Password</label>
+                                </div>
+                                
+                                <div class="form-floating mb-3">
+                                    <input type="password" 
+                                           class="form-control" 
+                                           id="new_password1"
+                                           name="new_password1" 
+                                           placeholder="New Password" required>
+                                    <label for="new_password1">New Password</label>
+                                </div>
+
+                                <div class="form-floating mb-4">
+                                    <input type="password" 
+                                           class="form-control" 
+                                           id="new_password2"
+                                           name="new_password2" 
+                                           placeholder="Confirm Password" required>
+                                    <label for="new_password2">Confirm Password</label>
+                                </div>
+
+                                <button type="submit" class="btn btn-success btn-lg w-100">
+                                    <i class="fas fa-key me-2"></i>Change Password
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .file-upload .upload-prompt {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    .file-upload .upload-prompt:hover {
+        border-color: #0d6efd;
+        background-color: #f8f9fa;
+    }
+    .avatar-preview img {
+        object-fit: cover;
+    }
+    .list-group-item.active {
+        border-color: rgba(255,255,255,0.125);
+    }
+    .form-control:focus {
+        box-shadow: 0 0 0 0.25rem rgba(13,110,253,0.25);
+    }
+</style>
+
+<script>
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const preview = document.querySelector('.avatar-preview img');
+                if (preview) {
+                    preview.src = e.target.result;
+                } else {
+                    const div = document.querySelector('.default-avatar');
+                    div.innerHTML = `<img src="${e.target.result}" class="rounded-circle shadow" width="120" height="120">`;
+                }
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+
+    // Form validation
+    (() => {
+        'use strict'
+        const forms = document.querySelectorAll('.needs-validation')
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault()
+                    event.stopPropagation()
+                }
+                form.classList.add('was-validated')
+            }, false)
+        })
+    })()
+</script>
+{% endblock %}

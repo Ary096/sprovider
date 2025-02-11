@@ -1,0 +1,117 @@
+.body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: var(--background-color);
+}
+
+.container {
+    position: relative;
+    width: 100%;
+    max-width: 400px;
+    background: #fff;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+/* Hero Section */
+
+.hero-section {
+    background: linear-gradient(rgba(255,255,255,0.9), rgba(255,255,255,0.9)), 
+                url('../images/hero-bg.jpg');
+    background-size: cover;
+    background-position: center;
+}
+
+/* Step Card */
+.step-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease;
+}
+
+.step-card:hover {
+    transform: translateY(-5px);
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    background: #007bff;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+}
+
+/* Pricing and Experience */
+.price-experience {
+    display: flex;
+    justify-content: space-between;
+    margin: 1rem 0;
+}
+
+/* Card Styling */
+.card {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Footer */
+.footer {
+    background: #2a2a2a;
+    color: white;
+}
+
+.footer h5 {
+    border-bottom: 2px solid #007bff;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Newsletter Form */
+.newsletter-form input {
+    border-radius: 25px;
+    padding: 0.8rem 1.5rem;
+}
+
+
+/* Service Container */
+.service-container {
+    display: flex;
+    overflow-x: auto;
+    gap: 15px;
+    padding: 10px;
+    scroll-snap-type: x mandatory;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none; /* Hide scrollbar for Firefox */
+}
+
+.service-container::-webkit-scrollbar {
+    display: none; /* Hide scrollbar for Chrome, Safari */
+}
+
+/* Service Card */
+
+.service-card:hover {
+    transform: scale(1.05);
+}
+
+.service-card {
+    border-radius: 10px;
+    transition: transform 0.3s ease-in-out;
+}
+
+.service-image {
+    width: 100%;
+    height: 30px; /* Fixed height */
+    object-fit: cover; /* Crop instead of stretching */
+}

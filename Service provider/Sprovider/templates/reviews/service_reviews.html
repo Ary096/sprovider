@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block title %}Reviews for {{ service.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Reviews for {{ service.name }}</h2>
+    <ul class="list-group">
+        {% for review in reviews %}
+        <li class="list-group-item">
+            <strong>{{ review.customer.email }}</strong> 
+            <span class="badge bg-warning text-dark">{{ review.rating }} Stars</span>
+            <p>{{ review.comment }}</p>
+            <small>Reviewed on {{ review.created_at|date:"d M Y" }}</small>
+        </li>
+        {% empty %}
+        <li class="list-group-item">No reviews yet.</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

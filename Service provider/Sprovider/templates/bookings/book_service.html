@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Service{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Header Section -->
+    <div class="text-center mb-5">
+        <h1 class="display-5 fw-bold text-primary">Book {{ service.name }}</h1>
+        <p class="lead">Please review the service details and choose your preferred date</p>
+    </div>
+
+    <!-- Service Details Grid -->
+    <div class="row g-5 mb-5">
+        <!-- Service Image -->
+        <div class="col-lg-6">
+            <div class="rounded-3 overflow-hidden shadow-lg">
+                <img src="{{ service.image.url }}" alt="{{ service.name }}" 
+                     class="img-fluid" style="object-fit: cover; min-height: 400px;">
+            </div>
+        </div>
+
+        <!-- Service Details -->
+        <div class="col-lg-6">
+            <div class="h-100 p-4 bg-light rounded-3 shadow-sm">
+                <h3 class="mb-4 fw-semibold">Service Overview</h3>
+                
+                <div class="d-grid gap-3">
+                    <!-- Price Card -->
+                    <div class="d-flex align-items-center p-3 bg-white rounded-2">
+                        <i class="fas fa-rupee-sign fs-4 text-success me-3"></i>
+                        <div>
+                            <p class="mb-0 text-muted small">Total Price</p>
+                            <h2 class="mb-0 fw-bold">₹{{ service.price }}</h2>
+                        </div>
+                    </div>
+
+                    <!-- Rating Card -->
+                    <div class="d-flex align-items-center p-3 bg-white rounded-2">
+                        <i class="fas fa-star fs-4 text-warning me-3"></i>
+                        <div>
+                            <p class="mb-0 text-muted small">Service Rating</p>
+                            <h2 class="mb-0 fw-bold">{{ service.average_rating }}/5</h2>
+                        </div>
+                    </div>
+
+                    <!-- Description Card -->
+                    <div class="p-3 bg-white rounded-2">
+                        <h4 class="h5 fw-semibold mb-3">📝 Description</h4>
+                        <p class="mb-0 text-muted">{{ service.description }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booking Form Section -->
+    <div class="mx-auto" style="max-width: 700px;">
+        <div class="card border-0 shadow-lg">
+            <div class="card-body p-5">
+                <h3 class="card-title mb-4 fw-bold">Select Booking Date</h3>
+
+                {% if form.errors %}
+                <div class="alert alert-danger mb-4" role="alert">
+                    Please correct the errors below
+                </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    <!-- Date Picker Input -->
+                    <div class="mb-4">
+                        <label class="form-label fw-semibold">Choose Date</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="far fa-calendar-alt"></i>
+                            </span>
+                            {{ form.scheduled_date }}
+                        </div>
+                        {% if form.scheduled_date.errors %}
+                        <div class="text-danger small mt-2">
+                            {{ form.scheduled_date.errors.as_text }}
+                        </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Form Actions -->
+                    <div class="d-grid gap-3 mt-5">
+                        <button type="submit" class="btn btn-lg btn-primary">
+                            Confirm Booking <i class="fas fa-check ms-2"></i>
+                        </button>
+                        <a href="{% url 'service_detail' service.id %}" class="btn btn-link text-muted">
+                            ← Back to Service Details
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Custom Styles */
+    input[type="date"] {
+        height: 50px;
+        border-radius: 8px !important;
+    }
+    .input-group-text {
+        background-color: #fff;
+        border-right: none;
+    }
+    .form-control:focus {
+        box-shadow: none;
+        border-color: #0d6efd;
+    }
+</style>
+{% endblock %}

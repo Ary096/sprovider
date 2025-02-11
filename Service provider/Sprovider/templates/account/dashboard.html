@@ -1,0 +1,133 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}User Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <!-- Main Dashboard -->
+        <div class="col-md-8">
+            <!-- Welcome Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h3 class="card-title mb-0">Welcome, {{ user.first_name }}!</h3>
+                </div>
+                <div class="card-body">
+                    <p class="lead">Your role: <span class="badge bg-secondary">{{ user.role }}</span></p>
+                    <div class="d-grid gap-2 d-md-block">
+                        <a href="{% url 'service_list' %}" class="btn btn-success btn-lg me-2">Book a Service</a>
+                        <a href="{% url 'user_bookings' %}" class="btn btn-outline-primary btn-lg">My Bookings</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Recent Activity Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="card-title mb-0">Recent Activity</h5>
+                </div>
+                <div class="card-body">
+                    {% if recent_bookings %}
+                        <ul class="list-group list-group-flush">
+                            {% for booking in recent_bookings %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <h6 class="mb-1">{{ booking.service.name }}</h6>
+                                        <small class="text-muted">Date: {{ booking.date }}</small>
+                                    </div>
+                                    <span class="badge bg-{{ booking.status|lower }}">{{ booking.status }}</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-muted mb-0">No recent bookings.</p>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Notifications Card -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-warning text-white">
+                    <h5 class="card-title mb-0">Notifications 🔔</h5>
+                </div>
+                <div class="card-body">
+                    {% if notifications %}
+                        <ul class="list-group list-group-flush">
+                            {% for notification in notifications %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    <div>
+                                        <p class="mb-1">{{ notification.message }}</p>
+                                        <small class="text-muted">{{ notification.date }}</small>
+                                    </div>
+                                    <button class="btn btn-sm btn-outline-secondary" onclick="markAsRead('{{ notification.id }}')">Mark as Read</button>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                        <div class="text-end mt-3">
+                            <button class="btn btn-sm btn-outline-danger" onclick="markAllAsRead()">Mark All as Read</button>
+                        </div>
+                    {% else %}
+                        <p class="text-muted mb-0">No new notifications.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Sidebar for Quick Links -->
+        <div class="col-md-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-secondary text-white">
+                    <h5 class="card-title mb-0">Quick Links</h5>
+                </div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item">
+                            <a href="{% url 'update_profile' %}" class="text-decoration-none">Update Profile</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="#" class="text-decoration-none">Change Password</a>
+                        </li>
+                        <li class="list-group-item">
+                            <a href="#" class="text-decoration-none">Contact Support</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript for Notifications -->
+<script>
+    function fetchNotifications() {
+        fetch('/api/notifications/list/', {
+            headers: {'Authorization': 'Bearer ' + localStorage.getItem('access_token')}
+        })
+        .then(response => response.json())
+        .then(data => {
+            let notificationList = document.getElementById('notificationList');
+            notificationList.innerHTML = '';
+            data.forEach(notification => {
+                let listItem = `<li>${notification.message} - <small>${notification.created_at}</small></li>`;
+                notificationList.innerHTML += listItem;
+            });
+        });
+    }
+
+    function markAsRead(notificationId) {
+        fetch(`/api/notifications/mark-read/${notificationId}/`, {
+            method: 'PATCH',
+            headers: {'Authorization': 'Bearer ' + localStorage.getItem('access_token')}
+        }).then(() => fetchNotifications());
+    }
+
+    function markAllAsRead() {
+        fetch('/api/notifications/mark-read/', {
+            method: 'PATCH',
+            headers: {'Authorization': 'Bearer ' + localStorage.getItem('access_token')}
+        }).then(() => fetchNotifications());
+    }
+
+    fetchNotifications();
+</script>
+{% endblock %}
